@@ -104,6 +104,8 @@ def foreachelse_statement():return '{', keyword('foreachelse'), '}', ANY_NUMBER_
 
 def print_statement():      return '{', OPTIONALLY, 'e ', expression, '}'
 
+def config_variable():      return '{#', whitespace, re.compile(r'[0-9a-zA-Z_]+'), whitespace, '#}' # "They can contain numbers, letters and underscores, much like a PHP variable."
+
 def function_parameter():   return symbol, '=', expression, whitespace
 
 def function_statement():   return '{', symbol, AT_LEAST_ONE, function_parameter, '}'
@@ -125,4 +127,4 @@ def for_statement():        return '{', keyword('foreach'), ANY_NUMBER_OF, [for_
 """
 Finally, the actual language description.
 """
-def smarty_language():      return AT_LEAST_ONE, [literal, if_statement, for_statement, function_statement, comment, print_statement, content]
+def smarty_language():      return AT_LEAST_ONE, [literal, if_statement, for_statement, function_statement, comment, print_statement, config_variable, content]
