@@ -26,6 +26,10 @@ import re
 from smartytotwig.pyPEG import parse
 from smartytotwig.pyPEG import keyword, _and, _not, ignore
 
+OPTIONALLY = 0
+ANY_NUMBER_OF = -1
+AT_LEAST_ONE = -2
+
 """
 Misc.
 """
@@ -35,7 +39,7 @@ def comment():              return re.compile("{\*.*?\*}", re.S)
 
 def literal():              return re.compile("{literal}.*?{/literal}", re.S)
 
-def junk():                 return -1, [' ', '\n', '\t']
+def junk():                 return ANY_NUMBER_OF, [' ', '\n', '\t']
 
 """
 Logical operators.
@@ -60,28 +64,28 @@ def right_paren():          return junk, ')'
 
 def left_paren():           return junk, '('
 
-def operator():             return 0, ' ', [and_operator, equals_operator, gte_operator, lte_operator, lt_operator, gt_operator, ne_operator, or_operator]
+def operator():             return OPTIONALLY, ' ', [and_operator, equals_operator, gte_operator, lte_operator, lt_operator, gt_operator, ne_operator, or_operator]
 
 """
 Smarty variables.
 """
-def string():               return 0, ' ', [(re.compile(r'"'), -1, [re.compile(r'[^$`"\\]'), re.compile(r'\\.')], re.compile(r'"')), (re.compile(r'\''), -1, [re.compile(r'[^\'\\]'), re.compile(r'\\.')], re.compile(r'\''))]
+def string():               return OPTIONALLY, ' ', [(re.compile(r'"'), ANY_NUMBER_OF, [re.compile(r'[^$`"\\]'), re.compile(r'\\.')], re.compile(r'"')), (re.compile(r'\''), ANY_NUMBER_OF, [re.compile(r'[^\'\\]'), re.compile(r'\\.')], re.compile(r'\''))]
 
-def text():                 return -2, [re.compile(r'[^$`"\\]'), re.compile(r'\\.')]
+def text():                 return AT_LEAST_ONE, [re.compile(r'[^$`"\\]'), re.compile(r'\\.')]
 
-def variable_string():      return '"', -2, [text, ('`', expression, '`'), ('$', expression)], '"'
+def variable_string():      return '"', AT_LEAST_ONE, [text, ('`', expression, '`'), ('$', expression)], '"'
 
 def dollar():               return '$'
 
 def not_operator():         return '!'
 
-def at_operator():         return '@'
+def at_operator():          return '@'
 
-def symbol():               return -1, [' ', '\n', '\t'], 0, [not_operator, at_operator], 0, dollar, re.compile(r'[\w\-\+]+')
+def symbol():               return ANY_NUMBER_OF, [' ', '\n', '\t'], OPTIONALLY, [not_operator, at_operator], OPTIONALLY, dollar, re.compile(r'[\w\-\+]+')
 
-def array():                return symbol, "[", 0, expression, "]"
+def array():                return symbol, "[", OPTIONALLY, expression, "]"
 
-def modifier():             return [object_dereference, array, symbol, variable_string, string], -2, modifier_right, 0, ' '
+def modifier():             return [object_dereference, array, symbol, variable_string, string], AT_LEAST_ONE, modifier_right, OPTIONALLY, ' '
 
 def expression():           return [modifier, object_dereference, array, symbol, string, variable_string]
 
@@ -89,36 +93,36 @@ def object_dereference():   return [array, symbol], '.', expression
 
 def exp_no_modifier():      return [object_dereference, array, symbol, variable_string, string]
 
-def modifier_right():       return ('|', symbol, -1, (':', exp_no_modifier),)
+def modifier_right():       return ('|', symbol, ANY_NUMBER_OF, (':', exp_no_modifier),)
 
 """
 Smarty statements.
 """
-def else_statement():       return '{', keyword('else'), '}', -1, smarty_language
+def else_statement():       return '{', keyword('else'), '}', ANY_NUMBER_OF, smarty_language
 
-def foreachelse_statement():return '{', keyword('foreachelse'), '}', -1, smarty_language
+def foreachelse_statement():return '{', keyword('foreachelse'), '}', ANY_NUMBER_OF, smarty_language
 
-def print_statement():      return '{', 0, 'e ', expression, '}'
+def print_statement():      return '{', OPTIONALLY, 'e ', expression, '}'
 
 def function_parameter():   return symbol, '=', expression, junk
 
-def function_statement():   return '{', symbol, -2, function_parameter, '}'
+def function_statement():   return '{', symbol, AT_LEAST_ONE, function_parameter, '}'
 
-def for_from():             return junk, keyword('from'), '=', 0, ['"', '\''], expression, 0, ['"', '\''], junk
+def for_from():             return junk, keyword('from'), '=', OPTIONALLY, ['"', '\''], expression, OPTIONALLY, ['"', '\''], junk
 
-def for_item():             return junk, keyword('item'), '=', 0, ['"', '\''], symbol, 0, ['"', '\''], junk
+def for_item():             return junk, keyword('item'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], junk
 
-def for_name():             return junk, keyword('name'), '=', 0, ['"', '\''], symbol, 0, ['"', '\''], junk
+def for_name():             return junk, keyword('name'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], junk
 
-def for_key():              return junk, keyword('key'), '=', 0, ['"', '\''], symbol, 0, ['"', '\''], junk
+def for_key():              return junk, keyword('key'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], junk
 
-def elseif_statement():     return '{', keyword('elseif'), -1, left_paren, expression, -1, right_paren, -1, (operator, -1, left_paren, expression, -1, right_paren), '}', -1, smarty_language
+def elseif_statement():     return '{', keyword('elseif'), ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren, ANY_NUMBER_OF, (operator, ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren), '}', ANY_NUMBER_OF, smarty_language
 
-def if_statement():         return '{', keyword('if'), -1, left_paren, expression, -1, right_paren, -1, (operator, -1, left_paren, expression, -1, right_paren), '}', -1, smarty_language, -1, [else_statement, elseif_statement], '{/', keyword('if'), '}'
+def if_statement():         return '{', keyword('if'), ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren, ANY_NUMBER_OF, (operator, ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren), '}', ANY_NUMBER_OF, smarty_language, ANY_NUMBER_OF, [else_statement, elseif_statement], '{/', keyword('if'), '}'
 
-def for_statement():        return '{', keyword('foreach'), -1, [for_from, for_item, for_name, for_key], '}', -1, smarty_language, 0, foreachelse_statement, '{/', keyword('foreach'), '}'
+def for_statement():        return '{', keyword('foreach'), ANY_NUMBER_OF, [for_from, for_item, for_name, for_key], '}', ANY_NUMBER_OF, smarty_language, OPTIONALLY, foreachelse_statement, '{/', keyword('foreach'), '}'
 
 """
 Finally, the actual language description.
 """
-def smarty_language():      return -2, [literal, if_statement, for_statement, function_statement, comment, print_statement, content]
+def smarty_language():      return AT_LEAST_ONE, [literal, if_statement, for_statement, function_statement, comment, print_statement, content]

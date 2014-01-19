@@ -15,3 +15,4 @@ _smartytotwig --smarty-file=examples/guestbook.tpl --twig-file=output.twig_
 Differences after fork:
 
 - Added smartytotwig.bat
+- Assigned some names for the quantifiers 0, -1 and -2
