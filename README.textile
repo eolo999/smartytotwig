@@ -17,3 +17,4 @@ Differences after fork:
 - Added smartytotwig.bat
 - Renamed "junk" to "whitespace" because usually _junk_ refers to *arbitrary* data that is ignored by a parser
 - Assigned some names for the quantifiers 0, -1 and -2
+- Allows whitespace within the curly braces of an if condition

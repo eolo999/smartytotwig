@@ -118,7 +118,7 @@ def for_key():              return whitespace, keyword('key'), '=', OPTIONALLY, 
 
 def elseif_statement():     return '{', keyword('elseif'), ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren, ANY_NUMBER_OF, (operator, ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren), '}', ANY_NUMBER_OF, smarty_language
 
-def if_statement():         return '{', keyword('if'), ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren, ANY_NUMBER_OF, (operator, ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren), '}', ANY_NUMBER_OF, smarty_language, ANY_NUMBER_OF, [else_statement, elseif_statement], '{/', keyword('if'), '}'
+def if_statement():         return '{', whitespace, keyword('if'), ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren, ANY_NUMBER_OF, (operator, ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren), whitespace, '}', ANY_NUMBER_OF, smarty_language, ANY_NUMBER_OF, [else_statement, elseif_statement], '{/', keyword('if'), '}'
 
 def for_statement():        return '{', keyword('foreach'), ANY_NUMBER_OF, [for_from, for_item, for_name, for_key], '}', ANY_NUMBER_OF, smarty_language, OPTIONALLY, foreachelse_statement, '{/', keyword('foreach'), '}'
 
