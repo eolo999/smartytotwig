@@ -39,7 +39,7 @@ def comment():              return re.compile("{\*.*?\*}", re.S)
 
 def literal():              return re.compile("{literal}.*?{/literal}", re.S)
 
-def junk():                 return ANY_NUMBER_OF, [' ', '\n', '\t']
+def whitespace():           return ANY_NUMBER_OF, [' ', '\n', '\t']
 
 """
 Logical operators.
@@ -60,9 +60,9 @@ def lte_operator():         return ['<=']
 
 def gte_operator():         return ['>=']
 
-def right_paren():          return junk, ')'
+def right_paren():          return whitespace, ')'
 
-def left_paren():           return junk, '('
+def left_paren():           return whitespace, '('
 
 def operator():             return OPTIONALLY, ' ', [and_operator, equals_operator, gte_operator, lte_operator, lt_operator, gt_operator, ne_operator, or_operator]
 
@@ -104,17 +104,17 @@ def foreachelse_statement():return '{', keyword('foreachelse'), '}', ANY_NUMBER_
 
 def print_statement():      return '{', OPTIONALLY, 'e ', expression, '}'
 
-def function_parameter():   return symbol, '=', expression, junk
+def function_parameter():   return symbol, '=', expression, whitespace
 
 def function_statement():   return '{', symbol, AT_LEAST_ONE, function_parameter, '}'
 
-def for_from():             return junk, keyword('from'), '=', OPTIONALLY, ['"', '\''], expression, OPTIONALLY, ['"', '\''], junk
+def for_from():             return whitespace, keyword('from'), '=', OPTIONALLY, ['"', '\''], expression, OPTIONALLY, ['"', '\''], whitespace
 
-def for_item():             return junk, keyword('item'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], junk
+def for_item():             return whitespace, keyword('item'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], whitespace
 
-def for_name():             return junk, keyword('name'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], junk
+def for_name():             return whitespace, keyword('name'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], whitespace
 
-def for_key():              return junk, keyword('key'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], junk
+def for_key():              return whitespace, keyword('key'), '=', OPTIONALLY, ['"', '\''], symbol, OPTIONALLY, ['"', '\''], whitespace
 
 def elseif_statement():     return '{', keyword('elseif'), ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren, ANY_NUMBER_OF, (operator, ANY_NUMBER_OF, left_paren, expression, ANY_NUMBER_OF, right_paren), '}', ANY_NUMBER_OF, smarty_language
 
