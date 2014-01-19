@@ -12,3 +12,6 @@ _smartytotwig --smarty-file=examples/guestbook.tpl --twig-file=output.twig_
 
 
 
+Differences after fork:
+
+- Added smartytotwig.bat
