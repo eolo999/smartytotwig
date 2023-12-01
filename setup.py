@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 from configparser import ConfigParser, os
 
 # Read version.conf and use the version #.
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.readfp(open('version.conf'))
 
 setup(name="smartytotwig",
